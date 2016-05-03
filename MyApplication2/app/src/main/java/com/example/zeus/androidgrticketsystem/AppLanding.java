@@ -2,16 +2,25 @@ package com.example.zeus.androidgrticketsystem;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class AppLanding extends AppCompatActivity {
@@ -20,8 +29,12 @@ public class AppLanding extends AppCompatActivity {
     EditText password;
     Button loginBtn;
     TextView successOrFailMessage;
+    TextView paramsSent;
 
     public final static String EXTRA_MESSAGE = "this is the extra message we had to have for some reason.";
+
+    RequestQueue requestQueue = VolleySinglton.getInstance().getRequestQueue();
+    final String url = "http://craigkoch.greenrivertech.net/loginAndroid.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +46,58 @@ public class AppLanding extends AppCompatActivity {
         userName = (EditText) findViewById(R.id.userNameTextBox);
         password = (EditText) findViewById(R.id.passwordTextBox);
         loginBtn = (Button) findViewById(R.id.loginButton);
+        paramsSent = (TextView) findViewById(R.id.paramsSent);
         successOrFailMessage = (TextView) findViewById(R.id.SuccessOrFailMessage);
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent loginSuccessIntent = new Intent(AppLanding.this, openTicketsActivity.class);
-                String message = userName.getText().toString();
-                loginSuccessIntent.putExtra(EXTRA_MESSAGE, message);
-                startActivity(loginSuccessIntent);
+                postJsonObjectRequest(url);
             }
         });
+    }
+
+    void postJsonObjectRequest(String url){
+
+        JSONObject params = new JSONObject();
+        try {
+            params.put("username", userName.getText().toString());
+            params.put("password", password.getText().toString());
+            //paramsSent.setText(params.get("username").toString() + params.get("password").toString());
+        } catch (JSONException e){
+            Log.d("", "");
+        }
+
+        final JsonObjectRequest loginRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+
+                        try {
+                            if (jsonObject.get("success").equals("true")) {
+                                successOrFailMessage.setText("hello");
+                                Intent loginSuccessIntent = new Intent(AppLanding.this, openTicketsActivity.class);
+                                String message = userName.getText().toString();
+                                loginSuccessIntent.putExtra(EXTRA_MESSAGE, message);
+                                startActivity(loginSuccessIntent);
+                            }
+                        } catch (JSONException e) {
+                            Log.d("", "");
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.d("", "");
+                        successOrFailMessage.setText("User name or password was incorrect. Please try again.");
+                    }
+                });
+
+        requestQueue.add(loginRequest);
     }
 
     @Override
