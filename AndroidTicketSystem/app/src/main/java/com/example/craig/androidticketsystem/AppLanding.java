@@ -25,7 +25,6 @@ import org.json.JSONObject;
 
 public class AppLanding extends AppCompatActivity {
 
-    //this is a comment
     EditText userName;
     EditText password;
     Button loginBtn;
