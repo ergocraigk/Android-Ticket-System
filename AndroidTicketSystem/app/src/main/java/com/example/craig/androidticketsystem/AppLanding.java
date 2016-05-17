@@ -34,7 +34,7 @@ public class AppLanding extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "this is the extra message we had to have for some reason.";
 
     RequestQueue requestQueue = VolleySinglton.getInstance().getRequestQueue();
-    final String login = "http://craigkoch.greenrivertech.net/loginAndroid.php";
+    final String login = "http://craigkoch.greenrivertech.net/AndroidTicketSystem/loginAndroid.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
