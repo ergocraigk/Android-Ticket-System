@@ -30,8 +30,8 @@ import java.util.ArrayList;
 public class SubmitTicketActivity extends AppCompatActivity {
 
     public final static String EXTRA_MESSAGE = "this is the extra message we had to have for some reason.";
-    RequestQueue requestQueue = VolleySinglton.getInstance().getRequestQueue();
-    String url = "http://craigkoch.greenrivertech.net/AndroidTicketSystem/AndroidSubmitTicket.php";
+    //RequestQueue requestQueue = VolleySinglton.getInstance().getRequestQueue();
+    final String url = "http://craigkoch.greenrivertech.net/AndroidTicketSystem/AndroidSubmitTicket.php";
     Button leavebtn;
     Button submitTicketbtn;
     EditText firstname;
@@ -97,9 +97,9 @@ public class SubmitTicketActivity extends AppCompatActivity {
         try {
             params.put("fname", firstname.getText().toString());
             params.put("lname", lastname.getText().toString());
-            params.put("urgency", urgency.toString());// no get text testing
+            params.put("urgency", urgency.getSelectedItem().toString());// no get text testing
             params.put("description", description.getText().toString());
-            params.put("domain", domain.toString());//no get text testing
+            params.put("domain", domain.getSelectedItem().toString());//no get text testing
             params.put("email", email.getText().toString());
 
             //paramsSent.setText(params.get("username").toString() + params.get("password").toString());
@@ -116,7 +116,7 @@ public class SubmitTicketActivity extends AppCompatActivity {
                     public void onResponse(JSONObject jsonObject) {
 
                         try {
-                            if (jsonObject.get("success").equals("true")) {
+                            if (jsonObject.get("success").equals("success")) {
                                 Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_LONG).show();
                             }
                         } catch (JSONException e) {
@@ -127,12 +127,12 @@ public class SubmitTicketActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        Log.d("", "");
+                        Log.d("Error Message", volleyError.toString());
                         Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_LONG).show();
                     }
                 });
 
-        requestQueue.add(SubmitTicket);
+        AppLanding.requestQueue.add(SubmitTicket);
     }
 }
 /*
