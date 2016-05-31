@@ -16,11 +16,14 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +36,7 @@ public class TicketTableActivity extends AppCompatActivity {
     final String url = "http://craigkoch.greenrivertech.net/AndroidTicketSystem/AndroidTicketTable.php";
     Button leavebtn;
     Button submitbtn;
+    String jsonResponse;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -93,50 +97,52 @@ public class TicketTableActivity extends AppCompatActivity {
 
     void TicketTableMethod(String url) {
 
-        JSONObject params = new JSONObject();
-        try {
-            params.put("abc", "abc");//.getText().toString());
-
-
-            //paramsSent.setText(params.get("username").toString() + params.get("password").toString());
-        } catch (JSONException e) {
-            Log.d("error", e.toString());
-        }
-        //dataComingIn.setText("jsonString");
-        final JsonObjectRequest SubmitTicket = new JsonObjectRequest(
-                Request.Method.POST,
+        JsonArrayRequest req = new JsonArrayRequest(
                 url,
-
-                params,
-                new Response.Listener<JSONObject>() {
-
+                new Response.Listener<JSONArray>() {
                     @Override
+                    public void onResponse(JSONArray response) {
+                        Log.d("Error Message", response.toString());
 
-                    public void onResponse(JSONObject jsonObject) {
                         try {
+                            // Parsing json array response
+                            // loop through each json object
+                            jsonResponse = "";
+                            for (int i = 0; i < response.length(); i++) {
 
-                            String jsonString = jsonObject.getString("ticketid");
-                            dataComingIn.setText(jsonString);
-                        }
+                                JSONObject person = (JSONObject) response
+                                        .get(i);
 
-                       /* try {
-                            if (jsonObject.get("success").equals("success")) {
-                                Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_LONG).show();
+                                String name = person.getString("ticketid");
+                                String email = person.getString("firstname");
+
+                                jsonResponse += "Name: " + name + "\n\n";
+                                jsonResponse += "Email: " + email + "\n\n\n";
+
                             }
-                        }*/ catch (JSONException e) {
-                            Log.d("Error Message", e.toString());
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Log.d("Error Message", volleyError.toString());
-                        Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_LONG).show();
-                    }
-                });
 
-        AppLanding.requestQueue.add(SubmitTicket);
+                            receivedMessage.setText(jsonResponse);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(),
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+
+                        //hidepDialog();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("Error message 2", "Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_SHORT).show();
+                //hidepDialog();
+            }
+        });
+
+        AppLanding.requestQueue.add(req);
     }
 
     @Override
