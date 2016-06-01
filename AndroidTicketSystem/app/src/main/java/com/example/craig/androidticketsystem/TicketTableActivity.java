@@ -41,7 +41,7 @@ public class TicketTableActivity extends AppCompatActivity {
     final String url = "http://craigkoch.greenrivertech.net/AndroidTicketSystem/AndroidTicketTable.php";
     Button leavebtn;
     Button submitbtn;
-    //String jsonResponse;
+
     JSONObject json_data;
 
     ArrayList<String> jsonResponse = new ArrayList<>();
@@ -62,10 +62,9 @@ public class TicketTableActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, jsonResponse);
 
         TicketTableMethod(url);
+
         ListView listView = (ListView)findViewById(R.id.listView);
         listView.setAdapter(adapter);
-
-        //listView.setAdapter(adapter);
 
         Intent logintent = getIntent();
         String logmessage = logintent.getStringExtra(AppLanding.EXTRA_MESSAGE);
@@ -137,9 +136,6 @@ public class TicketTableActivity extends AppCompatActivity {
                                 array += jobject.get("lastname").toString();
 
                                 jsonResponse.add(array);
-                                //jsonResponse.add(jobject.optJSONObject("ticketid"));
-                                //String name = person.getString("ticketid");
-                                //String email = person.getString("firstname");
 
                             }
 
