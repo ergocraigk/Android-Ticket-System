@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +29,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class TicketTableActivity extends AppCompatActivity {
 
     TextView receivedMessage;
@@ -36,7 +41,11 @@ public class TicketTableActivity extends AppCompatActivity {
     final String url = "http://craigkoch.greenrivertech.net/AndroidTicketSystem/AndroidTicketTable.php";
     Button leavebtn;
     Button submitbtn;
-    String jsonResponse;
+    //String jsonResponse;
+    JSONObject json_data;
+
+    ArrayList<String> jsonResponse = new ArrayList<>();
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -49,6 +58,14 @@ public class TicketTableActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ticket_table);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, jsonResponse);
+
+        TicketTableMethod(url);
+        ListView listView = (ListView)findViewById(R.id.listView);
+        listView.setAdapter(adapter);
+
+        //listView.setAdapter(adapter);
 
         Intent logintent = getIntent();
         String logmessage = logintent.getStringExtra(AppLanding.EXTRA_MESSAGE);
@@ -89,7 +106,7 @@ public class TicketTableActivity extends AppCompatActivity {
                 startActivity(ticketSubmitSuccess);
             }
         });
-        TicketTableMethod(url);
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -102,34 +119,39 @@ public class TicketTableActivity extends AppCompatActivity {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        Log.d("Error Message", response.toString());
+                        //Log.d("Error Message", response.toString());
+
+
 
                         try {
                             // Parsing json array response
                             // loop through each json object
-                            jsonResponse = "";
+
                             for (int i = 0; i < response.length(); i++) {
 
-                                JSONObject person = (JSONObject) response
-                                        .get(i);
+                                JSONObject jobject = (JSONObject) response.get(i);
 
-                                String name = person.getString("ticketid");
-                                String email = person.getString("firstname");
+                                String array = "";
+                                array += jobject.get("ticketid").toString();
+                                array += jobject.get("firstname").toString();
+                                array += jobject.get("lastname").toString();
 
-                                jsonResponse += "Name: " + name + "\n\n";
-                                jsonResponse += "Email: " + email + "\n\n\n";
+                                jsonResponse.add(array);
+                                //jsonResponse.add(jobject.optJSONObject("ticketid"));
+                                //String name = person.getString("ticketid");
+                                //String email = person.getString("firstname");
 
                             }
 
-                            receivedMessage.setText(jsonResponse);
-
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             Toast.makeText(getApplicationContext(),
                                     "Error: " + e.getMessage(),
                                     Toast.LENGTH_LONG).show();
                         }
-
+                        Toast.makeText(getApplicationContext(),
+                                jsonResponse.toString(),
+                                Toast.LENGTH_LONG).show();
                         //hidepDialog();
                     }
                 }, new Response.ErrorListener() {
