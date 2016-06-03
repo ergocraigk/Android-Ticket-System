@@ -6,13 +6,38 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class SingleTicketActivity extends AppCompatActivity {
 
     public final static String EXTRA_MESSAGE = "this is the extra message we had to have for some reason.";
     Button leavebtn;
+    String receivedTicket;
+    TextView textView;
+
+    String url = "http://craigkoch.greenrivertech.net/AndroidTicketSystem/SingleTicket.php";
+
+    TextView ticketid;
+    TextView name;
+    Spinner techChoice;
+    Spinner category;
+    // urgency? domain?
+    TextView statusData;
+    TextView description;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +48,11 @@ public class SingleTicketActivity extends AppCompatActivity {
 
         leavebtn = (Button) findViewById(R.id.singleToTicketTable);
         Intent titintent = getIntent();
-        String titmessage = titintent.getStringExtra(SingleTicketActivity.EXTRA_MESSAGE);
+        receivedTicket = titintent.getStringExtra(TicketTableActivity.EXTRA_MESSAGE);
+
+        receivedTicket = receivedTicket.substring(0,11);
+
+        SubmitTicketMethod(url);
 
         leavebtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,6 +64,37 @@ public class SingleTicketActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    void SubmitTicketMethod(String url){
+
+        JSONObject params = new JSONObject();
+        try {
+            params.put("ticketid", receivedTicket);
+        } catch (JSONException e){
+            Log.d("", "");
+        }
+
+        final JsonObjectRequest SubmitTicket = new JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.d("Error Message", volleyError.toString());
+                        Toast.makeText(getApplicationContext(), "fail" + volleyError, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        AppLanding.requestQueue.add(SubmitTicket);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.craig.androidticketsystem;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -48,7 +49,6 @@ public class SubmitTicketActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         firstname = (EditText) findViewById(R.id.firstname);
         lastname = (EditText) findViewById(R.id.lastname);
 
@@ -78,15 +78,15 @@ public class SubmitTicketActivity extends AppCompatActivity {
 
         leavebtn = (Button) findViewById(R.id.singleToTicketTable);
         Intent titintent = getIntent();
-        String titmessage = titintent.getStringExtra(TicketTableActivity.EXTRA_MESSAGE);
+        //String titmessage = titintent.getStringExtra(TicketTableActivity.EXTRA_MESSAGE);
 
         leavebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent ticketUpdateSuccess = new Intent(SubmitTicketActivity.this, TicketTableActivity.class);
-                String message = "We send back stuff now ok goodbye";
-                ticketUpdateSuccess.putExtra(EXTRA_MESSAGE, message);
-                startActivity(ticketUpdateSuccess);
+                //String message = "We send back stuff now ok goodbye";
+                //ticketUpdateSuccess.putExtra(EXTRA_MESSAGE, message);
+                finish();
             }
         });
     }
@@ -118,6 +118,7 @@ public class SubmitTicketActivity extends AppCompatActivity {
                         try {
                             if (jsonObject.get("success").equals("success")) {
                                 Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_LONG).show();
+                                finish();
                             }
                         } catch (JSONException e) {
                             Log.d("", "");

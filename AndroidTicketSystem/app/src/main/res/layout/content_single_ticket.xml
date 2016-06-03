@@ -13,6 +13,13 @@
     tools:showIn="@layout/activity_single_ticket"
     android:orientation="vertical">
 
+
+
+    <TextView
+        android:id="@+id/tempMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <Button
         android:text="Go To Ticket Table"
         android:id="@+id/singleToTicketTable"

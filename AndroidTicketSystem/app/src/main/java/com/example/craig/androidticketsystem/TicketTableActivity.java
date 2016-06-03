@@ -3,33 +3,24 @@ package com.example.craig.androidticketsystem;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
-
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class TicketTableActivity extends AppCompatActivity {
@@ -42,9 +33,8 @@ public class TicketTableActivity extends AppCompatActivity {
     Button leavebtn;
     Button submitbtn;
 
-    JSONObject json_data;
-
-    ArrayList<String> jsonResponse = new ArrayList<>();
+    ArrayList<String> thatResponse;
+    ArrayAdapter<String> adapter;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -59,12 +49,16 @@ public class TicketTableActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, jsonResponse);
+        thatResponse = new ArrayList<>();
 
-        TicketTableMethod(url);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, thatResponse);
 
         ListView listView = (ListView)findViewById(R.id.listView);
         listView.setAdapter(adapter);
+
+        TicketTableMethod(url);
+
+        listView.setOnItemClickListener(new ListClickHandler());
 
         Intent logintent = getIntent();
         String logmessage = logintent.getStringExtra(AppLanding.EXTRA_MESSAGE);
@@ -80,7 +74,6 @@ public class TicketTableActivity extends AppCompatActivity {
 
         dataComingIn = (TextView) findViewById(R.id.dataComingIn);
         //dataComingIn.setText("jsonString");
-
 
         leavebtn = (Button) findViewById(R.id.singleToTicketTable);
 
@@ -111,6 +104,26 @@ public class TicketTableActivity extends AppCompatActivity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    public class ListClickHandler implements AdapterView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> adapter, View view, int position, long arg3) {
+
+            //TextView listText = (TextView) view.findViewById(R.id.listText);
+            //String text = listText.getText().toString();
+
+            // create intent to start another activity
+            Intent intent = new Intent(TicketTableActivity.this, SingleTicketActivity.class);
+            // add the selected text item to our intent.
+            String message = thatResponse.get(position);
+            intent.putExtra(EXTRA_MESSAGE, message);
+
+            startActivity(intent);
+
+        }
+
+    }
+
     void TicketTableMethod(String url) {
 
         JsonArrayRequest req = new JsonArrayRequest(
@@ -119,8 +132,6 @@ public class TicketTableActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray response) {
                         //Log.d("Error Message", response.toString());
-
-
 
                         try {
                             // Parsing json array response
@@ -131,11 +142,11 @@ public class TicketTableActivity extends AppCompatActivity {
                                 JSONObject jobject = (JSONObject) response.get(i);
 
                                 String array = "";
-                                array += jobject.get("ticketid").toString();
-                                array += jobject.get("firstname").toString();
-                                array += jobject.get("lastname").toString();
+                                array += jobject.get("ticketid").toString() + " ";
+                                array += jobject.get("firstname").toString() + " ";
+                                array += jobject.get("lastname").toString() + " ";
 
-                                jsonResponse.add(array);
+                                thatResponse.add(array);
 
                             }
 
@@ -145,9 +156,9 @@ public class TicketTableActivity extends AppCompatActivity {
                                     "Error: " + e.getMessage(),
                                     Toast.LENGTH_LONG).show();
                         }
-                        Toast.makeText(getApplicationContext(),
-                                jsonResponse.toString(),
-                                Toast.LENGTH_LONG).show();
+
+                        //necessary to display the listview
+                        adapter.notifyDataSetChanged();
                         //hidepDialog();
                     }
                 }, new Response.ErrorListener() {
@@ -171,13 +182,13 @@ public class TicketTableActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
         Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "TicketTable Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
+                Action.TYPE_VIEW,
+                "TicketTable Page",
+
                 // make sure this auto-generated web page URL is correct.
                 // Otherwise, set the URL to null.
                 Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
+
                 Uri.parse("android-app://com.example.craig.androidticketsystem/http/host/path")
         );
         AppIndex.AppIndexApi.start(client, viewAction);
@@ -190,13 +201,13 @@ public class TicketTableActivity extends AppCompatActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "TicketTable Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
+                Action.TYPE_VIEW,
+                "TicketTable Page",
+
                 // make sure this auto-generated web page URL is correct.
                 // Otherwise, set the URL to null.
                 Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
+
                 Uri.parse("android-app://com.example.craig.androidticketsystem/http/host/path")
         );
         AppIndex.AppIndexApi.end(client, viewAction);
