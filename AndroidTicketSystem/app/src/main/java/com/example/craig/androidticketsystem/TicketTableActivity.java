@@ -20,8 +20,12 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+
+import java.util.List;
+
 
 public class TicketTableActivity extends AppCompatActivity {
 
@@ -33,8 +37,20 @@ public class TicketTableActivity extends AppCompatActivity {
     Button leavebtn;
     Button submitbtn;
 
+
     ArrayList<String> thatResponse;
-    ArrayAdapter<String> adapter;
+   ArrayAdapter<String> adapter;
+
+
+    JSONObject json_data;
+
+   // ArrayList<String> jsonResponse = new ArrayList<>();
+
+
+    //String jsonResponse;
+
+
+   // List<person> list
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -46,6 +62,7 @@ public class TicketTableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket_table);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -65,6 +82,10 @@ public class TicketTableActivity extends AppCompatActivity {
 
         receivedMessage = (TextView) findViewById(R.id.receivedMessage);
         receivedMessage.setText(logmessage);
+
+
+
+
 
         Intent stintent = getIntent();
         String stmessage = stintent.getStringExtra(SingleTicketActivity.EXTRA_MESSAGE);
@@ -98,6 +119,9 @@ public class TicketTableActivity extends AppCompatActivity {
                 startActivity(ticketSubmitSuccess);
             }
         });
+
+
+        TicketTableMethod(url);
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -139,6 +163,7 @@ public class TicketTableActivity extends AppCompatActivity {
 
                             for (int i = 0; i < response.length(); i++) {
 
+
                                 JSONObject jobject = (JSONObject) response.get(i);
 
                                 String array = "";
@@ -148,9 +173,33 @@ public class TicketTableActivity extends AppCompatActivity {
 
                                 thatResponse.add(array);
 
+                                // JSONObject person = (JSONObject) response.get(i);
+                                JSONObject person = response.getJSONObject(i);
+
+                                ArrayList<String> name = new ArrayList<String>();
+                                JSONArray nameArray = person.getJSONArray("name");
+                                for(int j=0; j < nameArray.length();j++){
+                                    name.add((String) nameArray.get(j));
+                                }
+
+                                //String name = person.getString("ticketid");
+                                //String email = person.getString("firstname");
+
+                                //jsonResponse.add("name");
+                                //jsonResponse += "Name: " + name + "\n\n";
+                                //jsonResponse += "Email: " + email + "\n\n\n";
+
+                                //jsonResponse.add(name);
+
+
+                                //listView.setAdapter(adapter);
                             }
 
-                        } catch (Exception e) {
+
+
+
+                        } catch (JSONException e) {
+
                             e.printStackTrace();
                             Toast.makeText(getApplicationContext(),
                                     "Error: " + e.getMessage(),
