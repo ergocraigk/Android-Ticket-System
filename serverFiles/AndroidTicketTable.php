@@ -29,7 +29,7 @@
         }
         
         $sql = "SELECT ticketid, firstname, lastname, urgency, description, email, domain,
-                `date submitted`, closed, pcid, stateid FROM `craigk_ticket` . `Tickets` WHERE active = 1";
+                `date submitted`, closed, pcid, stateid FROM `craigk_ticket` . `Tickets` WHERE active = 0";
         
         $result = $dbh->query($sql);
         
@@ -50,7 +50,7 @@
         }
         
         $sql = "SELECT ticketid, firstname, lastname, urgency, description, email, domain,
-                `date submitted`, closed, pcid, stateid FROM `craigk_ticket` . `Tickets` WHERE active = 1";
+                `date submitted`, closed, pcid, stateid FROM `craigk_ticket` . `Tickets` WHERE active = 0";
         
         $result = $dbh->query($sql);
         
